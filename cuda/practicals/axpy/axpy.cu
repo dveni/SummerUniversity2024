@@ -9,8 +9,10 @@
 template <typename T>
 __global__
 void axpy(int n, T alpha, const T* x, T* y){
-    auto i = threadIdx.x;
-    y[i] += alpha*x[i];
+    auto i = threadIdx.x + blockIdx.x * blockDim.x; 
+    if i<n {
+        y[i] += alpha*x[i];
+    }
 }
 
 int main(int argc, char** argv) {
