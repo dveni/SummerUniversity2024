@@ -30,10 +30,8 @@ int main(int argc, char** argv) {
 
     // copy to device
     auto start = get_time();
-    // copy_to_device<double>(x_host, x_device, n);
-    // copy_to_device<double>(y_host, y_device, n);
-    x_device = x_host;
-    y_device = y_host;
+    copy_to_device<double>(x_host, x_device, n);
+    copy_to_device<double>(y_host, y_device, n);
     auto time_H2D = get_time() - start;
 
     // TODO calculate grid dimensions
@@ -54,8 +52,7 @@ int main(int argc, char** argv) {
 
     // copy result back to host
     start = get_time();
-    // copy_to_host<double>(y_device, y, n);
-    y = y_device;
+    copy_to_host<double>(y_device, y, n);
     auto time_D2H = get_time() - start;
 
     std::cout << "-------\ntimings\n-------\n";
