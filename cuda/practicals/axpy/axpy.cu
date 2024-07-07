@@ -54,7 +54,8 @@ int main(int argc, char** argv) {
 
     // copy result back to host
     start = get_time();
-    copy_to_host<double>(y_device, y, n);
+    // copy_to_host<double>(y_device, y, n);
+    y = y_device;
     auto time_D2H = get_time() - start;
 
     std::cout << "-------\ntimings\n-------\n";
