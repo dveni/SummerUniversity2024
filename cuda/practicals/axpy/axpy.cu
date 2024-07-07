@@ -22,17 +22,25 @@ int main(int argc, char** argv) {
 
     std::cout << "memcopy and daxpy test of size " << n << "\n";
 
-    double* x_device = malloc_device<double>(n);
-    double* y_device = malloc_device<double>(n);
+    float* x_device = malloc_device<float>(n);
+    float* y_device = malloc_device<float>(n);
 
-    double* x_host = malloc_host<double>(n, 1.5);
-    double* y_host = malloc_host<double>(n, 3.0);
-    double* y      = malloc_host<double>(n, 0.0);
+    float* x_host = malloc_host<float>(n, 1.5);
+    float* y_host = malloc_host<float>(n, 3.0);
+    float* y      = malloc_host<float>(n, 0.0);
+    // double* x_device = malloc_device<double>(n);
+    // double* y_device = malloc_device<double>(n);
+
+    // double* x_host = malloc_host<double>(n, 1.5);
+    // double* y_host = malloc_host<double>(n, 3.0);
+    // double* y      = malloc_host<double>(n, 0.0);
 
     // copy to device
     auto start = get_time();
-    copy_to_device<double>(x_host, x_device, n);
-    copy_to_device<double>(y_host, y_device, n);
+    copy_to_device<float>(x_host, x_device, n);
+    copy_to_device<float>(y_host, y_device, n);
+    // copy_to_device<double>(x_host, x_device, n);
+    // copy_to_device<double>(y_host, y_device, n);
     auto time_H2D = get_time() - start;
 
     // TODO calculate grid dimensions
@@ -43,7 +51,7 @@ int main(int argc, char** argv) {
 
     start = get_time();
     // TODO launch kernel (alpha=2.0)
-    axpy<<<1, n>>>(n, 2.0, x_device, y_device);
+    axpy<<<1, n>>>(n, float(2.0), x_device, y_device);
 
     cudaDeviceSynchronize();
     auto time_axpy = get_time() - start;
@@ -53,7 +61,8 @@ int main(int argc, char** argv) {
 
     // copy result back to host
     start = get_time();
-    copy_to_host<double>(y_device, y, n);
+    copy_to_host<float>(y_device, y, n);
+    // copy_to_host<double>(y_device, y, n);
     auto time_D2H = get_time() - start;
 
     std::cout << "-------\ntimings\n-------\n";
