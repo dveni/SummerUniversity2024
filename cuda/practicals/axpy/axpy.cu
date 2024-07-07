@@ -30,8 +30,10 @@ int main(int argc, char** argv) {
 
     // copy to device
     auto start = get_time();
-    copy_to_device<double>(x_host, x_device, n);
-    copy_to_device<double>(y_host, y_device, n);
+    // copy_to_device<double>(x_host, x_device, n);
+    // copy_to_device<double>(y_host, y_device, n);
+    x_device = x_host;
+    y_device = y_host;
     auto time_H2D = get_time() - start;
 
     // TODO calculate grid dimensions
@@ -42,7 +44,7 @@ int main(int argc, char** argv) {
 
     start = get_time();
     // TODO launch kernel (alpha=2.0)
-    axpy<<<1,n>>>(n, 2.0, x_device, y_device);
+    axpy<<<1, n>>>(n, 2.0, x_device, y_device);
 
     cudaDeviceSynchronize();
     auto time_axpy = get_time() - start;
