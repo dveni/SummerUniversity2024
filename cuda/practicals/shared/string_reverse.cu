@@ -12,8 +12,7 @@ void reverse_string(char* str, int n){
     printf("i %d\n", int(i));
     if (i<n){
         printf("i < n %d\n", int(i));
-        auto aux = str[i];
-        str[n-1-i] = aux;
+        str[n-1-i] = str[i];
     }
     
 }
