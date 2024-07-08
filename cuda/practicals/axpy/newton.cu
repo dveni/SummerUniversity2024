@@ -18,15 +18,15 @@ double fp(double x) {
 //      f(x) = 0
 // where
 //      f(x) = exp(cos(x)) - 2
-void newton_host(int n, double *x) {
-    for(int i=0; i<n; ++i) {
-        auto x0 = x[i];
-        for(int iter=0; iter<5; ++iter) {
-            x0 -= f(x0)/fp(x0);
-        }
-        x[i] = x0;
-    }
-}
+// void newton_host(int n, double *x) {
+//     for(int i=0; i<n; ++i) {
+//         auto x0 = x[i];
+//         for(int iter=0; iter<5; ++iter) {
+//             x0 -= f(x0)/fp(x0);
+//         }
+//         x[i] = x0;
+//     }
+// }
 
 // TODO : implement newton_device() kernel that performs the work in newton_host
 //        in parallel on the GPU
