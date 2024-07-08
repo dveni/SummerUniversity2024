@@ -115,8 +115,8 @@ int main(int argc, char** argv) {
     auto start_event = stream.enqueue_event();
     for(auto step=0; step<nsteps; ++step) {
         if (use_shared) {
-            blur_shared_block<block_dim><<<grid_dim, block_dim>>>(x0, x1, n);
-            // blur_shared<<<grid_dim, block_dim, (block_dim+2)*sizeof(double)>>>(x0, x1, n);
+            // blur_shared_block<block_dim><<<grid_dim, block_dim>>>(x0, x1, n);
+            blur_shared<<<grid_dim, block_dim, (block_dim+2)*sizeof(double)>>>(x0, x1, n);
         }
         else {
             blur<<<grid_dim, block_dim>>>(x0, x1, n);
