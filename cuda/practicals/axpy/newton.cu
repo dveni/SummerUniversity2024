@@ -8,6 +8,10 @@ __device__
 double f(double x) {
     return exp(cos(x))-2;
 };
+__host__
+double f(double x) {
+    return exp(cos(x))-2;
+};
 
 __device__
 double fp(double x) {
