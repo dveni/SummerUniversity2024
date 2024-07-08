@@ -10,7 +10,7 @@ void histogram(int* x, int* bins, int n) {
     auto i = threadIdx.x + blockIdx.x*blockDim.x;
     if (i<n) {
         const auto c = x[i];
-        bins[c]++;
+        atomicAdd(&bins[c],1);
     }
 }
 
