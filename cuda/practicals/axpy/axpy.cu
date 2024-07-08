@@ -47,7 +47,7 @@ int main(int argc, char** argv) {
 
     // TODO calculate grid dimensions
     // IGNORE for the first kernel writing exercise
-    int block_size = 1024;
+    int block_size = 64;
     int n_blocks = (n+block_size-1) / block_size;
 
     // synchronize the host and device so that the timings are accurate
