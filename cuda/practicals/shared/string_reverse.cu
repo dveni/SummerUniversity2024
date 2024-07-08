@@ -30,6 +30,7 @@ int main(int argc, char** argv) {
     // TODO : call the string reverse function
     auto grid_dim = 1;
     auto block_dim = 128;
+     std::cout << "n:\n" << n << "\n";
     reverse_string<<<grid_dim, block_dim>>>(string, n);
 
     // print reversed string
