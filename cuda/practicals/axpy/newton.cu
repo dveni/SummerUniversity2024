@@ -30,6 +30,7 @@ void newton_host(int n, double *x) {
 
 // TODO : implement newton_device() kernel that performs the work in newton_host
 //        in parallel on the GPU
+__global__
 void newton_device(int n, double *x){
     auto i = threadIdx.x + blockIdx.x * blockDim.x;
     auto x0 = x[i];
