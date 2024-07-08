@@ -13,7 +13,7 @@ void reverse_string(char* str, int n){
     auto gi = li + block_start;
 
     // printf("i %d\n", int(i));
-    if (gi<(n)/2){
+    if (gi<n/2){
         // printf("i < n %d\n", int(i));
         buffer[0] = str[gi];
         buffer[1] = str[n-1-gi];
@@ -42,7 +42,7 @@ int main(int argc, char** argv) {
     auto grid_dim = 1;
     auto block_dim = 128;
     std::cout << "n:\n" << n << "\n";
-    reverse_string<<<grid_dim, block_dim, (block_dim)*sizeof(char)>>>(string, n);
+    reverse_string<<<grid_dim, block_dim>>>(string, n);
 
     // print reversed string
     cudaDeviceSynchronize();
