@@ -42,7 +42,7 @@ int main(int argc, char** argv) {
     auto grid_dim = 1;
     auto block_dim = 128;
     std::cout << "n:\n" << n << "\n";
-    reverse_string<<<grid_dim, block_dim>>>(string, n);
+    reverse_string<<<grid_dim, block_dim, (block_dim)*sizeof(char)>>>(string, n);
 
     // print reversed string
     cudaDeviceSynchronize();
