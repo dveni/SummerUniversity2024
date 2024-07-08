@@ -9,6 +9,8 @@ __global__
 void reverse_string(char* str, int n){
     auto i = threadIdx.x + blockIdx.x*blockDim.x;
     str[n-i] = str[i];
+    std::cout << "string at i:\n" << str[i] << "\n";
+    std::cout << "string at n-1:\n" <<  str[n-i] << "\n";
 }
 
 int main(int argc, char** argv) {
