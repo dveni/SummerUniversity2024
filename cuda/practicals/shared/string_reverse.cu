@@ -7,12 +7,15 @@
 // TODO : implement a kernel that reverses a string of length n in place
 __global__
 void reverse_string(char* str, int n){
+    printf("help");
     auto i = threadIdx.x + blockIdx.x*blockDim.x;
-    auto aux = str[i];
-    if (i<n-1){
+
+    printf("i %d\n", int(i));
+    if (i<n+1){
+        auto aux = str[i];
         str[n-i] = aux;
     }
-    printf("hello world from ci %d\n", int(i));
+    printf("i %d\n", int(i));
 }
 
 int main(int argc, char** argv) {
