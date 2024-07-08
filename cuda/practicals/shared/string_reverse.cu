@@ -10,7 +10,7 @@ void reverse_string(char* str, int n){
     auto i = threadIdx.x + blockIdx.x*blockDim.x;
 
     printf("i %d\n", int(i));
-    if (i<n+1){
+    if (i<n){
         printf("i < n %d\n", int(i));
         auto aux = str[i];
         str[n-i] = aux;
