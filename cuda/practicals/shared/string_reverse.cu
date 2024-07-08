@@ -12,6 +12,7 @@ void reverse_string(char* str, int n){
     if (i<n-1){
         str[n-i] = aux;
     }
+    printf("hello world from ci %d\n", int(i));
 }
 
 int main(int argc, char** argv) {
