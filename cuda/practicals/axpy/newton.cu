@@ -4,15 +4,15 @@
 
 #include "util.hpp"
 
-// __host__
-// double f(double x) {
-//     return exp(cos(x))-2;
-// };
+__device__
+double f(double x) {
+    return exp(cos(x))-2;
+};
 
-// __host__
-// double fp(double x) {
-//     return -sin(x) * exp(cos(x));
-// };
+__device__
+double fp(double x) {
+    return -sin(x) * exp(cos(x));
+};
 
 // implements newton solve for
 //      f(x) = 0
@@ -31,15 +31,6 @@ void newton_host(int n, double *x) {
 // TODO : implement newton_device() kernel that performs the work in newton_host
 //        in parallel on the GPU
 
-__global__
-void f(double x) {
-    x = exp(cos(x))-2;
-};
-
-__global__
-void fp(double x) {
-    x= -sin(x) * exp(cos(x));
-};
 
 __global__
 void newton_device(int n, double *x){
