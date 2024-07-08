@@ -13,7 +13,7 @@ void reverse_string(char* str, int n){
     auto gi = li + block_start;
 
     // printf("i %d\n", int(i));
-    if (gi<(n+1)/2){
+    if (gi<(n)/2){
         // printf("i < n %d\n", int(i));
         buffer[0] = str[gi];
         buffer[1] = str[n-1-gi];
