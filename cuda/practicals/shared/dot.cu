@@ -23,6 +23,8 @@ void dot_gpu_kernel(const double *x, const double* y, double *result, int n) {
     auto gi = li + blockDim.x+blockIdx.x;
 
     if (gi<n){
+        printf("gi %d\n", int(gi));
+        printf("li %d\n", int(li));
         buffer[li] = x[gi]*y[gi];
         __syncthreads();
         if (li == 0){
@@ -40,7 +42,7 @@ void dot_gpu_kernel(const double *x, const double* y, double *result, int n) {
 double dot_gpu(const double *x, const double* y, int n) {
     static double* result = malloc_managed<double>(1);
     // TODO call dot product kernel
-    const int block_dim = 128;
+    const int block_dim = 64;
     auto grid_dim = (n+block_dim-1)/block_dim;
     dot_gpu_kernel<block_dim><<<grid_dim,block_dim>>>(x, y, result, n);
     cudaDeviceSynchronize();
