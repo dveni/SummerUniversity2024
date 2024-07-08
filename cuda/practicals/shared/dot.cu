@@ -30,6 +30,7 @@ void dot_gpu_kernel(const double *x, const double* y, double *result, int n) {
             for (int i=0; i<THREADS; ++i){
                 blockSum += buffer[i];
             }
+            printf("blockSum %d\n", int(blockSum));
             *result = blockSum;
         }
     }
