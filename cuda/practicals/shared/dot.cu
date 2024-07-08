@@ -20,21 +20,23 @@ void dot_gpu_kernel(const double *x, const double* y, double *result, int n) {
     __shared__ double buffer[THREADS];
     // __shared__ double sum[1];
     auto li = threadIdx.x;
-    auto gi = li + blockDim.x+blockIdx.x;
-
+    auto gi = li + blockDim.x*blockIdx.x;
+    // printf("li %d\n", int(li));
+    // printf("gi %d\n", int(gi));
     if (gi<n){
-        printf("gi %d\n", int(gi));
-        printf("li %d\n", int(li));
+        // printf("gi %d\n", int(gi));
         buffer[li] = x[gi]*y[gi];
-        __syncthreads();
-        if (li == 0){
-            double blockSum = 0.0;
-            for (int i=0; i<THREADS; ++i){
-                blockSum += buffer[i];
+        auto width = THREADS/2;
+        while (width > 0){
+            __syncthreads();
+            if (li < width){
+                // printf("%d,%d\n",li, width);
+                buffer[li] += buffer[li+width];
             }
-            printf("blockSum %d\n", int(blockSum));
-            *result = blockSum;
+            width = width/2;
         }
+        // printf("buffer[1] %f\n", buffer[1]);
+        *result = buffer[0];
     }
     
 }
@@ -42,7 +44,7 @@ void dot_gpu_kernel(const double *x, const double* y, double *result, int n) {
 double dot_gpu(const double *x, const double* y, int n) {
     static double* result = malloc_managed<double>(1);
     // TODO call dot product kernel
-    const int block_dim = 64;
+    const int block_dim = 1024;
     auto grid_dim = (n+block_dim-1)/block_dim;
     dot_gpu_kernel<block_dim><<<grid_dim,block_dim>>>(x, y, result, n);
     cudaDeviceSynchronize();
@@ -72,6 +74,7 @@ int main(int argc, char** argv) {
     copy_to_device<double>(y_h, y_d, n);
 
     auto result   = dot_gpu(x_d, y_d, n);
+    cudaDeviceSynchronize();
     auto expected = dot_host(x_h, y_h, n);
     printf("expected %f got %f\n", (float)expected, (float)result);
 
