@@ -30,6 +30,14 @@ void newton_host(int n, double *x) {
 
 // TODO : implement newton_device() kernel that performs the work in newton_host
 //        in parallel on the GPU
+void newton_device(int n, double *x){
+    auto i = threadIdx.x + blockIdx.x * blockDim.x;
+    auto x0 = x[i];
+    for(int iter=0; iter<5; ++iter) {
+        x0 -= f(x0)/fp(x0);
+    }
+    x[i] = x0;
+}
 
 int main(int argc, char** argv) {
     size_t pow        = read_arg(argc, argv, 1, 20);
