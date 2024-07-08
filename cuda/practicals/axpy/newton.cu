@@ -9,7 +9,7 @@ double f(double x) {
     return exp(cos(x))-2;
 };
 __host__
-double f(double x) {
+double f_host(double x) {
     return exp(cos(x))-2;
 };
 
@@ -90,7 +90,7 @@ int main(int argc, char** argv) {
     // check for errors
     auto errors = 0;
     for(auto i=0; i<n; ++i) {
-        if(std::fabs(f(x[i]))>1e-10) {
+        if(std::fabs(f_host(x[i]))>1e-10) {
             errors++;
         }
     }
