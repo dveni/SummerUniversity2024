@@ -14,7 +14,7 @@ void blur_shared_block(const double *in, double* out, int n) {
     auto block_start = blockDim.x * blockIdx.x;
     auto li = threadIdx.x + 1;
     auto gi = li + block_start;
-
+    
     if(gi<n-1) {
         // load shared memory
         buffer[li] = in[gi];
