@@ -42,7 +42,7 @@ V = [-0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.01]
 pl.axes().set_aspect('equal')
 pl.contourf(X, Y, data.reshape(res_y, res_x), V, alpha=.75, cmap='jet')
 pl.contour(X, Y, data.reshape(res_y, res_x), V, colors='black')
-
+pl.colorbar()
 pl.savefig("output.png", dpi=72)
 if args.show:
     pl.show()

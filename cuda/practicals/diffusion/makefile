@@ -1,4 +1,4 @@
-FLAGS=-arch=sm_60 -std=c++11 -O2 -lineinfo -I../include -DWITH_G2G
+FLAGS=-arch=sm_80 -std=c++11 -O2 -lineinfo -I../include -DWITH_G2G
 
 LINK=-lcublas -lcuda
 
