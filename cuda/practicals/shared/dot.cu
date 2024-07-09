@@ -14,6 +14,7 @@ double dot_host(const double *x, const double* y, int n) {
 }
 
 // TODO implement dot product kernel
+// works for n < 1024
 template <int THREADS>
 __global__
 void dot_gpu_kernel(const double *x, const double* y, double *result, int n) {
@@ -25,6 +26,7 @@ void dot_gpu_kernel(const double *x, const double* y, double *result, int n) {
     // printf("gi %d\n", int(gi));
     if (gi<n){
         // printf("gi %d\n", int(gi));
+        auto block_width = 
         buffer[li] = x[gi]*y[gi];
         auto width = THREADS/2;
         while (width > 0){
@@ -40,13 +42,68 @@ void dot_gpu_kernel(const double *x, const double* y, double *result, int n) {
     }
     
 }
+template <int THREADS>
+__global__
+void dot_gpu_kernel_general(const double *x, const double* y, double *result, int n) {
+    __shared__ double buffer[THREADS];
+    auto li = threadIdx.x;
+    auto gid = li + blockDim.x*blockIdx.x;
+    // printf("li %d\n", int(li));
+    // printf("gi %d\n", int(gi));
+    // auto nblocks = (n+blockDim.x-1)/blockDim.x;
+    if (gid<n){
+        // printf("gi %d\n", int(gi));
+        // auto block_width = nblocks/2;
+        // printf("nblocks %d\n", nblocks);
+        // while (block_width>0){
+        //     if (gi<(block_width*blockDim.x)){
+        //         printf("blocks %d,%d\n",gi, block_width);
+        //         buffer[li] += x[gi+block_width*blockDim.x]*y[gi+block_width*blockDim.x];
+        //     }
+        //     block_width=block_width/2;
+        // }
+        buffer[li] = x[gid]*y[gid];
+        // buf[i] = gid<n? x[gid]*y[gid]: 0;
+        auto width = THREADS/2;
+        while (width > 0){
+            __syncthreads();
+            if (li < width){
+                // printf("threads %d,%d\n",li, width);
+                buffer[li] += buffer[li+width];
+            }
+            width = width/2;
+        }
+        // printf("buffer[1] %f\n", buffer[1]);
+        if (li==0){
+            // *result = buffer[0];
+            atomicAdd(result, *buffer);
+        }
+    }
+    // buffer[li] = gid<n? x[gid]*y[gid]: 0;
+    // auto width = THREADS/2;
+    // while (width > 0){
+    //     __syncthreads();
+    //     if (li < width){
+    //         // printf("threads %d,%d\n",li, width);
+    //         buffer[li] += buffer[li+width];
+    //     }
+    //     width = width/2;
+    // }
+    // // printf("buffer[1] %f\n", buffer[1]);
+    // if (li==0){
+    //     // *result = buffer[0];
+    //     atomicAdd(result, *buffer);
+    // }
+    
+}
 
 double dot_gpu(const double *x, const double* y, int n) {
     static double* result = malloc_managed<double>(1);
     // TODO call dot product kernel
-    const int block_dim = 1024;
+    const int block_dim = 64;
     auto grid_dim = (n+block_dim-1)/block_dim;
-    dot_gpu_kernel<block_dim><<<grid_dim,block_dim>>>(x, y, result, n);
+    // dot_gpu_kernel<block_dim><<<grid_dim,block_dim>>>(x, y, result, n);
+    dot_gpu_kernel_general<block_dim><<<grid_dim,block_dim>>>(x, y, result, n);
     cudaDeviceSynchronize();
     return *result;
 }

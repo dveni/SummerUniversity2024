@@ -1,4 +1,4 @@
-NVCC_FLAGS=-arch=sm_60 -std=c++11 -O3 -I../include
+NVCC_FLAGS=-arch=sm_80 -std=c++11 -O3 -I../include
 GCC_FLAGS=-std=c++11 -O3 -fopenmp -I../include
 
 LINK=-lcublas -lcuda

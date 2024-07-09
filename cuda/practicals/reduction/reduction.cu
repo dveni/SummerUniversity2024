@@ -24,16 +24,22 @@ __global__ void sum(float *d_data, float *d_sum) {
     temp[tidw] = value;
   }
   for (int d = blockDim.x / warpSize / 2; d > 0; d >>= 1) {
+    __syncthreads();
     if (!(tid % warpSize) && tidw < d) {
       temp[tidw] += temp[tidw + d];
     }
+  }
+  if (!tid%warpSize){
+    atomicAdd(d_sum, *temp);
   }
 }
 
 int main() {
   float d_data_host[N], *d_data, d_sum_host, *d_sum;
+  double sum_host = 0;
   for (int i = 0; i < N; i++) {
     d_data_host[i] = i;
+    sum_host += i;
   }
   cudaMalloc(&d_data, N * sizeof(float));
   cudaMalloc(&d_sum, 1 * sizeof(float));
@@ -41,4 +47,5 @@ int main() {
   sum<<<(N - 1) / 128 + 1, 128, 128 * sizeof(float)>>>(d_data, d_sum);
   cudaMemcpy(&d_sum_host, d_sum, 1 * sizeof(float), cudaMemcpyDeviceToHost);
   std::cout << d_sum_host << std::endl;
+  std::cout << sum_host << std::endl;
 }
