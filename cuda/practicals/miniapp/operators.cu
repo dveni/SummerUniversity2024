@@ -63,18 +63,20 @@ namespace kernels {
         //                          + dxs * U(i,j) * (1.0 - U(i,j));
         auto i = threadIdx.x + blockDim.x*blockIdx.x+1;
         auto j = threadIdx.y + blockDim.y*blockIdx.y+1;
-        int nx = params.nx;
-        int ny = params.ny;
+        auto nx = params.nx;
+        auto ny = params.ny;
         auto alpha = params.alpha;
         auto dxs = params.dxs;
-
+        auto pos = i + nx*j;
+        
         if (i<nx-1 && j<ny-1){
-            auto pos = i = nx*j;
+           
             S[pos] = -(4. + alpha) * U[pos]
                         + U[pos-1] + U[pos+1]
                         + U[pos-nx] + U[pos+nx]
                         + alpha*params.x_old[pos]
                         + dxs * U[pos] * (1.0 - U[pos]);
+            
         }
     }
 
@@ -224,6 +226,7 @@ void diffusion(data::Field const& U, data::Field &S)
     // TODO: apply stencil to the interior grid points
     dim3 block_dim(16,16);
     dim3 interior_grid_dim(calculate_grid_dim(nx, block_dim.x), calculate_grid_dim(ny, block_dim.y));
+    
     kernels::stencil_interior<<<interior_grid_dim, block_dim>>>(S.device_data(), U.device_data());
     // cudaDeviceSynchronize();    // TODO: remove after debugging
     // cuda_check_last_kernel("internal kernel"); // TODO: remove after debugging
