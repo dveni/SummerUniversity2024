@@ -61,6 +61,21 @@ namespace kernels {
         //                          + U(i,j-1) + U(i,j+1) // north and south
         //                          + alpha * x_old(i,j)
         //                          + dxs * U(i,j) * (1.0 - U(i,j));
+        auto i = threadIdx.x + blockDim.x*blockIdx.x+1;
+        auto j = threadIdx.y + blockDim.y*blockIdx.y+1;
+        int nx = params.nx;
+        int ny = params.ny;
+        auto alpha = params.alpha;
+        auto dxs = params.dxs;
+
+        if (i<nx-1 && j<ny-1){
+            auto pos = i = nx*j;
+            S[pos] = -(4. + alpha) * U[pos]
+                        + U[pos-1] + U[pos+1]
+                        + U[pos-nx] + U[pos+nx]
+                        + alpha*params.x_old[pos]
+                        + dxs * U[pos] * (1.0 - U[pos]);
+        }
     }
 
     __global__
@@ -86,6 +101,11 @@ namespace kernels {
 
             // TODO : do the stencil on the WEST side
             // WEST : i = 0
+            pos = find_pos(0, j);
+            S[pos] = -(4. + alpha) * U[pos]
+                        + U[pos+1] + U[pos-nx] + U[pos+nx]
+                        + alpha*params.x_old[pos] + params.bndW[j]
+                        + dxs * U[pos] * (1.0 - U[pos]);
         }
     }
 
@@ -108,6 +128,11 @@ namespace kernels {
 
             // TODO : do the stencil on the SOUTH side
             // SOUTH : j = 0
+            pos = i;
+            S[pos] = -(4. + alpha) * U[pos]
+                        + U[pos-1] + U[pos+1] + U[pos+nx]
+                        + alpha*params.x_old[pos] + params.bndS[i]
+                        + dxs * U[pos] * (1.0 - U[pos]);
         }
     }
 
@@ -196,27 +221,27 @@ void diffusion(data::Field const& U, data::Field &S)
     auto calculate_grid_dim = [] (size_t n, size_t block_dim) {
         return (n+block_dim-1)/block_dim;
     };
-
     // TODO: apply stencil to the interior grid points
-
-    cudaDeviceSynchronize();    // TODO: remove after debugging
-    cuda_check_last_kernel("internal kernel"); // TODO: remove after debugging
-
+    dim3 block_dim(16,16);
+    dim3 interior_grid_dim(calculate_grid_dim(nx, block_dim.x), calculate_grid_dim(ny, block_dim.y));
+    kernels::stencil_interior<<<interior_grid_dim, block_dim>>>(S.device_data(), U.device_data());
+    // cudaDeviceSynchronize();    // TODO: remove after debugging
+    // cuda_check_last_kernel("internal kernel"); // TODO: remove after debugging
     // apply stencil at east-west boundary
     auto bnd_grid_dim_y = calculate_grid_dim(ny, 64);
     kernels::stencil_east_west<<<bnd_grid_dim_y, 64>>>(S.device_data(), U.device_data());
-    cudaDeviceSynchronize();    // TODO: remove after debugging
-    cuda_check_last_kernel("east-west kernel"); // TODO: remove after debugging
+    // cudaDeviceSynchronize();    // TODO: remove after debugging
+    // cuda_check_last_kernel("east-west kernel"); // TODO: remove after debugging
 
     // apply stencil at north-south boundary
     auto bnd_grid_dim_x = calculate_grid_dim(nx, 64);
     kernels::stencil_north_south<<<bnd_grid_dim_x, 64>>>(S.device_data(), U.device_data());
-    cudaDeviceSynchronize();    // TODO: remove after debugging
-    cuda_check_last_kernel("north-south kernel");   // TODO: remove after debugging
+    // cudaDeviceSynchronize();    // TODO: remove after debugging
+    // cuda_check_last_kernel("north-south kernel");   // TODO: remove after debugging
 
     // apply stencil at corners
     kernels::stencil_corners<<<1, 1>>>(S.device_data(), U.device_data());
-    cudaDeviceSynchronize();    // TODO: remove after debugging
-    cuda_check_last_kernel("corner kernel");    // TODO: remove after debugging
+    // cudaDeviceSynchronize();    // TODO: remove after debugging
+    // cuda_check_last_kernel("corner kernel");    // TODO: remove after debugging
 }
 } // namespace operators
