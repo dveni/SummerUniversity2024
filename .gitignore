@@ -1,2 +1,5 @@
 *.o
 .vscode
+.ipynb_checkpoints
+__pycache__/
+*.py[co]
